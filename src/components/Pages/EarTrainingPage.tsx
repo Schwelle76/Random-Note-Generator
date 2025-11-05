@@ -19,12 +19,13 @@ const EarTrainingPage: React.FC = () => {
 
     const earTrainingSettings = useEarTrainingSettingsContext()
     const noteInput = useNoteInput()
-    const earTrainingGame = useEarTrainingGame(noteInput.note, earTrainingSettings.scale, earTrainingSettings.root, earTrainingSettings.direction)
+    const earTrainingGame = useEarTrainingGame(noteInput.note, earTrainingSettings.scale, earTrainingSettings.root, earTrainingSettings.direction, 3);
    
     const [roundCount, setRoundCount] = useState(0);
     const previousScore = useRef(0); 
 
     const score = earTrainingGame.score;
+    const correctNotesCount = earTrainingGame.correctNotesCount;
 
     useEffect(() => {
 
@@ -105,7 +106,7 @@ const EarTrainingPage: React.FC = () => {
 
 
                 {earTrainingGame.ready && noteInput.ready && noteInput.inputDevice === 'ui' &&
-                    <NoteInputButtonGrid resetTrigger={roundCount} noteInput={noteInput} root={earTrainingGame.root.pitchClass} active = {!earTrainingGame.isTalking} />}
+                    <NoteInputButtonGrid resetTrigger={correctNotesCount} noteInput={noteInput} root={earTrainingGame.root.pitchClass} active = {!earTrainingGame.isTalking} />}
 
             </div>
 
