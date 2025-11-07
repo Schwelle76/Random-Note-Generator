@@ -19,7 +19,7 @@ const EarTrainingPage: React.FC = () => {
 
     const earTrainingSettings = useEarTrainingSettingsContext()
     const noteInput = useNoteInput()
-    const earTrainingGame = useEarTrainingGame(noteInput.note, earTrainingSettings.scale, earTrainingSettings.root, earTrainingSettings.direction, 3);
+    const earTrainingGame = useEarTrainingGame(noteInput.note, earTrainingSettings.scale, earTrainingSettings.root, earTrainingSettings.direction, 1);
    
     const [roundCount, setRoundCount] = useState(0);
     const previousScore = useRef(0); 
@@ -91,6 +91,7 @@ const EarTrainingPage: React.FC = () => {
                     <NoteDisplay
                         notes={[earTrainingGame.rootChannelOutput, ...earTrainingGame.targetNotesChannelOutput]}
                         root={earTrainingGame.root.pitchClass}
+                        activeNoteIndex={earTrainingGame.currentQuestionIndex + 1}
                     />}
             </div>
 
