@@ -69,25 +69,19 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
         else detectedPitchClass = detectedNote;
 
 
-        if (currentQuestionIndex !== -1) {
-            setTargetNotesChannels((prev) => {
-                return [
-                    ...prev.slice(0, currentQuestionIndex),
-                    {
-                        message: detectedPitchClass ? detectedPitchClass : '?',
-                        style: ''
-                    },
-                    ...prev.slice(currentQuestionIndex + 1)
-                ];
-            })
-        }
-
-
         if (detectedNote === undefined || detectedNote instanceof Note && detectedNote.equals(root))
             return;
 
 
         if (detectedPitchClass === targetNotes[currentQuestionIndex].pitchClass) {
+
+            setTargetNotesChannels((prev) =>
+                [
+                    ...prev.slice(0, currentQuestionIndex),
+                    { message: targetNotes[currentQuestionIndex].pitchClass, style: "reward" },
+                    ...prev.slice(currentQuestionIndex + 1, prev.length)
+                ]
+            );
 
             setCorrectNotesCount(prev => prev + 1);
 
@@ -100,6 +94,9 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
                     setNewNotes();
                 });
             }
+        } else {
+            setScore((prev) => Math.max(0, prev - 1));
+            playPunishment();
         }
 
     }, [detectedNote]);
@@ -198,6 +195,43 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
             )
         }
 
+    }
+
+    const playPunishment = async () => {
+
+        return new Promise((resolve) => {
+            if (targetNotes.length > 0 && currentQuestionIndex < targetNotes.length) {
+
+                setTargetNotesChannels((prev) => [
+                    ...prev.slice(0, currentQuestionIndex),
+                    { message: prev[currentQuestionIndex].message, style: "punishment" },
+                    ...prev.slice(currentQuestionIndex + 1, prev.length)
+                ]
+                );
+
+                const rewardNotes: string[] = [];
+                const punishmentInterval = getPitchClass(targetNotes[currentQuestionIndex].pitchClass, "b5");
+
+                rewardNotes.push(root.pitchClass + 4);
+                if (punishmentInterval)
+                    rewardNotes.push(punishmentInterval + 3);
+
+                audioPlayer.play(rewardNotes[0], .2, .5);
+                setTimeout(() => {
+                    audioPlayer.play(rewardNotes[1].toString(), .4, .4).then(() => {
+                        setTargetNotesChannels((prev) =>
+                            [
+                                ...prev.slice(0, currentQuestionIndex),
+                                { message: prev[currentQuestionIndex].message, style: "" },
+                                ...prev.slice(currentQuestionIndex + 1, prev.length)
+                            ]
+                        );
+                        resolve(true)
+                    });
+
+                }, 130);
+            } else resolve(false);
+        })
     }
 
     const playReward = async () => {

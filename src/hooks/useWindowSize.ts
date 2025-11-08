@@ -9,7 +9,6 @@ function useWindowSize(onSizeUpdated: () => void) {
     const debouncedUpdate = () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(onSizeUpdated, 150);
-      console.log('resized');
     };
 
     window.addEventListener('resize', debouncedUpdate);

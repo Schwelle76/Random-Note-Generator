@@ -19,7 +19,7 @@ const SensitivitySlider: React.FC<SensitivitySliderProps> = ({ value, min, max, 
         onChange={onChange}
         className="sensitivity-slider"
       />
-      <p className="sensitivity-label">Detection sensitivity: {value}</p>
+      <p className="sensitivity-label">Microphone sensitivity: {value}</p>
     </div>
   );
 };

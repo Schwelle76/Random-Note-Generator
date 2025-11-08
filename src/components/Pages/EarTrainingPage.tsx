@@ -20,9 +20,9 @@ const EarTrainingPage: React.FC = () => {
     const earTrainingSettings = useEarTrainingSettingsContext()
     const noteInput = useNoteInput()
     const earTrainingGame = useEarTrainingGame(noteInput.note, earTrainingSettings.scale, earTrainingSettings.root, earTrainingSettings.direction, 1);
-   
+
     const [roundCount, setRoundCount] = useState(0);
-    const previousScore = useRef(0); 
+    const previousScore = useRef(0);
 
     const score = earTrainingGame.score;
     const correctNotesCount = earTrainingGame.correctNotesCount;
@@ -31,8 +31,8 @@ const EarTrainingPage: React.FC = () => {
 
 
 
-        if(earTrainingGame.score === 0) setRoundCount(0);
-        else if(earTrainingGame.score > previousScore.current){
+        if (earTrainingGame.score === 0) setRoundCount(0);
+        else if (earTrainingGame.score > previousScore.current) {
             setRoundCount(roundCount + 1);
         }
         previousScore.current = earTrainingGame.score;
@@ -64,7 +64,9 @@ const EarTrainingPage: React.FC = () => {
                     </button>
                 )}
 
-                <span className={styles.score}>{earTrainingGame.score > 0 ? earTrainingGame.score : ""}</span>
+                <span
+                    className={`${styles.score} ${styles[earTrainingGame.targetNotesChannelOutput[earTrainingGame.currentQuestionIndex].style]}`}
+                >{earTrainingGame.score}</span>
 
             </div>
 
@@ -107,7 +109,7 @@ const EarTrainingPage: React.FC = () => {
 
 
                 {earTrainingGame.ready && noteInput.ready && noteInput.inputDevice === 'ui' &&
-                    <NoteInputButtonGrid resetTrigger={correctNotesCount} noteInput={noteInput} root={earTrainingGame.root.pitchClass} active = {!earTrainingGame.isTalking} />}
+                    <NoteInputButtonGrid resetTrigger={correctNotesCount} noteInput={noteInput} root={earTrainingGame.root.pitchClass} active={!earTrainingGame.isTalking} />}
 
             </div>
 

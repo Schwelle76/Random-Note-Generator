@@ -80,3 +80,22 @@
 .hide {
   opacity: 0;
 }
+
+.punishment {
+  color: var(--color-error);
+  animation-name: shake;
+  animation-duration: 0.2s;         
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 2;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); } 
+  100% { transform: translateX(0); } 
+}
+
+.reward {
+  color: var(--color-accent);
+}

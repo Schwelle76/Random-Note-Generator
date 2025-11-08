@@ -11,6 +11,7 @@
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
   --color-accent: #11a8d2;
+  --color-error: #D14F0A;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

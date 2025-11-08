@@ -30,7 +30,6 @@ const NoteDisplay: React.FC<NoteDisplayProps> = ({ notes, root, activeNoteIndex 
     if (activeElement) {
       const mainDimension = Math.min(activeElement.offsetWidth, activeElement.offsetHeight);
       const size = mainDimension * indicatorScale;
-      const additionalSize = size - mainDimension;
       setIndicatorSize(size);
       setIndicatorX(activeElement.offsetLeft + activeElement.offsetWidth / 2 - size / 2);
       setIndicatorY(activeElement.offsetTop + activeElement.offsetHeight / 2 - size / 2);
@@ -47,7 +46,6 @@ const NoteDisplay: React.FC<NoteDisplayProps> = ({ notes, root, activeNoteIndex 
 
   return (
     <div className={style.noteDisplayContainer}>
-
 
       <div className={`${style.activeIndicator} ${style[activeNote.style]}`} style={{
         width: `${indicatorSize}px`,
