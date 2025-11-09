@@ -12,6 +12,7 @@ import InputSelection from '../InputSelection';
 import { useEarTrainingSettingsContext } from '../../contexts/EarTrainingSettingsContext';
 import volumeIcon from '../../assets/volume-mid.svg';
 import LoadingIcon from '../LoadingIcon';
+import NoteInputPanel from '../NoteInputPanel';
 
 
 
@@ -19,7 +20,16 @@ const EarTrainingPage: React.FC = () => {
 
     const earTrainingSettings = useEarTrainingSettingsContext()
     const noteInput = useNoteInput()
+
     const earTrainingGame = useEarTrainingGame(noteInput.note, earTrainingSettings.scale, earTrainingSettings.root, earTrainingSettings.direction, 1);
+
+
+    useEffect(() => {
+        if (noteInput.inputDevice === 'ui')
+            earTrainingGame.skipRoot(true);
+        else earTrainingGame.skipRoot(false);
+    }, [noteInput.inputDevice])
+
 
     const [roundCount, setRoundCount] = useState(0);
     const previousScore = useRef(0);
@@ -28,8 +38,6 @@ const EarTrainingPage: React.FC = () => {
     const correctNotesCount = earTrainingGame.correctNotesCount;
 
     useEffect(() => {
-
-
 
         if (earTrainingGame.score === 0) setRoundCount(0);
         else if (earTrainingGame.score > previousScore.current) {
@@ -85,27 +93,26 @@ const EarTrainingPage: React.FC = () => {
                     </div>
                 }
 
+
+                
                 {noteInput.inputDevice && earTrainingGame.active && !earTrainingGame.ready && noteInput.ready &&
                     <LoadingIcon />
                 }
 
                 {noteInput.inputDevice && earTrainingGame.active && earTrainingGame.ready && noteInput.ready &&
                     <NoteDisplay
-                        notes={[earTrainingGame.rootChannelOutput, ...earTrainingGame.targetNotesChannelOutput]}
+                        notes={[...earTrainingGame.targetNotesChannelOutput]}
                         root={earTrainingGame.root.pitchClass}
-                        activeNoteIndex={earTrainingGame.currentQuestionIndex + 1}
+                        activeNoteIndex={earTrainingGame.currentQuestionIndex}
                     />}
             </div>
 
 
             <div className={styles.bottom}>
 
-                {noteInput.ready && noteInput.inputDevice === 'microphone' && <SensitivitySlider
-                    value={noteInput.sensitivity}
-                    min={noteInput.MIN_SENSITIVITY}
-                    max={noteInput.MAX_SENSITIVITY}
-                    onChange={(e) => noteInput.setSensitivity(parseInt(e.target.value))}
-                />}
+
+                {noteInput.ready && noteInput.inputDevice != 'ui' 
+                && <NoteInputPanel noteInput={noteInput} />}
 
 
                 {earTrainingGame.ready && noteInput.ready && noteInput.inputDevice === 'ui' &&

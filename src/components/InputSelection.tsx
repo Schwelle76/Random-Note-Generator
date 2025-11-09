@@ -18,6 +18,7 @@ interface InputSelectionProps {
 const InputSelection: React.FC<InputSelectionProps> = ({ noteInput }) => {
 
     const usesMouse = window.matchMedia('(hover: hover)').matches;
+    const isDevMode = import.meta.env.DEV;
 
 
     function setInputDevice(InputDevice: InputDevice) {
@@ -39,8 +40,9 @@ const InputSelection: React.FC<InputSelectionProps> = ({ noteInput }) => {
                         }
                     </button>
                     {usesMouse ?
-                        <p>Mouse</p>: <p>Touch</p>}
+                        <p>Mouse</p> : <p>Touch</p>}
                 </div>
+
                 <div className={styles.inputOptionContainer}>
                     <button className={styles.inputOption} onClick={() => {
                         setInputDevice("microphone");
@@ -49,6 +51,16 @@ const InputSelection: React.FC<InputSelectionProps> = ({ noteInput }) => {
                     </button>
                     <p>Your instrument</p>
                 </div>
+
+                {isDevMode && <div className={styles.inputOptionContainer}>
+                    <button className={styles.inputOption} onClick={() => {
+                        setInputDevice("keyboard");
+                    }}>
+                        <img src={mouseIcon} alt={"Mouse"} className={styles.inputOptionImage} />
+                    </button>
+                    <p>Keyboard</p>
+                </div>}
+
             </div>
         </div>
 

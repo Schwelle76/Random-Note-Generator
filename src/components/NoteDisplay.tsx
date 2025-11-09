@@ -47,7 +47,7 @@ const NoteDisplay: React.FC<NoteDisplayProps> = ({ notes, root, activeNoteIndex 
   return (
     <div className={style.noteDisplayContainer}>
 
-      <div className={`${style.activeIndicator} ${style[activeNote.style]}`} style={{
+      <div className={`${style.activeIndicator} ${style[activeNote?.style]}`} style={{
         width: `${indicatorSize}px`,
         height: `${indicatorSize}px`,
         translate: `${indicatorX}px ${indicatorY}px`,

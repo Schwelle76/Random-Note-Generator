@@ -46,19 +46,9 @@ export default function useNoteInput() {
 
     useEffect(() => {
 
-        let timer : number | undefined;
-
-        if (inputDevice === 'ui') {
+        if (inputDevice === 'ui') 
             setNote(uiInput);
 
-            timer = setTimeout(() => {
-                    setNote(undefined)
-            }, 500);
-        }
-
-        return() => {
-            if(timer) clearTimeout(timer);
-        }
     }, [uiInput]);
 
     const initialize = async () => {

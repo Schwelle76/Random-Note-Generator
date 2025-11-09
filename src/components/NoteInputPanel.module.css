@@ -1,0 +1,24 @@
+
+.note-input-panel{
+
+}
+
+.input-pitch-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    
+    height: 7rem;
+    width: 7rem;
+    margin: auto;
+    margin-bottom: 2vh;
+    
+
+    border-radius: 50%;
+    border: solid 1px white;
+}
+
+.input-pitch{
+    font-size: 3rem;
+}
