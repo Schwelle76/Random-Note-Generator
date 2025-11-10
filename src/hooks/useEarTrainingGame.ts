@@ -23,14 +23,17 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
 
     const audioPlayer = useAudioPlayer();
 
-    const [targetNotesChannelOutput, setTargetNotesChannels] = useState<StyledMessage[]>([{ message: '', style: '' }]);
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [targetNotesChannelOutput, setTargetNotesChannels] = useState<StyledMessage[]>(Array.from({ length: melodyLength }, () => ({ message: '', style: '' })));
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
+    const [selectedNoteIndex, setSelectedNoteIndex] = useState(0);
     const [startQuestionIndex, setStartQuestionIndex] = useState(0);
     const [root, setRoot] = useState<Note>(pickRoot());
     const userRootOctaveRef = useRef<number>(defaultOctave);
 
     function skipRoot(boolean: boolean) {
-        setStartQuestionIndex(boolean ? 1 : 0);
+
+        const startQuestionIndexValue = boolean ? 1 : 0;
+        setStartQuestionIndex(startQuestionIndexValue);
     }
 
     const start = () => {
@@ -73,10 +76,11 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
         let detectedPitchClass = undefined;
         if (detectedNote instanceof Note) {
             detectedPitchClass = detectedNote.pitchClass;
-            
+
             if (detectedNote.pitchClass === root.pitchClass && detectedNote.octave === userRootOctaveRef.current) {
                 detectedNoteIsRoot = true;
-                setCurrentQuestionIndex(1);
+                setSelectedNoteIndex(1);
+                audioPlayer.play(root.toString());
                 return;
             }
 
@@ -89,32 +93,43 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
             return;
 
 
-        if (detectedPitchClass === notes[currentQuestionIndex].pitchClass) {
+        if (detectedPitchClass === notes[selectedNoteIndex].pitchClass) {
 
             setTargetNotesChannels((prev) =>
                 [
-                    ...prev.slice(0, currentQuestionIndex),
-                    { message: notes[currentQuestionIndex].pitchClass, style: "reward" },
-                    ...prev.slice(currentQuestionIndex + 1, prev.length)
+                    ...prev.slice(0, selectedNoteIndex),
+                    { message: notes[selectedNoteIndex].pitchClass, style: "reward" },
+                    ...prev.slice(selectedNoteIndex + 1, prev.length)
                 ]
             );
 
             setCorrectNotesCount(prev => prev + 1);
 
-            if (currentQuestionIndex < notes.length - 1){
-                if(currentQuestionIndex === 0 && detectedNote instanceof Note)
-                    userRootOctaveRef.current = detectedNote.octave;
+            if (selectedNoteIndex >= currentQuestionIndex) {
                 setCurrentQuestionIndex(prev => prev + 1);
+                setScore((prev) => prev + 1);
+            }
+
+            if (selectedNoteIndex < notes.length - 1) {
+                if (selectedNoteIndex === 0 && detectedNote instanceof Note) {
+                    userRootOctaveRef.current = detectedNote.octave;
+                }
+
+
+                setSelectedNoteIndex(prev => prev + 1);
+
+
+                audioPlayer.play(notes[selectedNoteIndex].toString());
             }
             else {
-                setScore(score + 1);
-                setCurrentQuestionIndex(startQuestionIndex);
+                setSelectedNoteIndex(0);
+                setCurrentQuestionIndex(1);
                 playReward().then(() => {
                     setNewNotes();
                 });
             }
         } else {
-            if (currentQuestionIndex > 0 && !detectedNoteIsRoot) {
+            if (selectedNoteIndex === currentQuestionIndex && selectedNoteIndex > 0 && !detectedNoteIsRoot) {
                 setScore((prev) => Math.max(0, prev - 1));
                 playPunishment();
             }
@@ -133,7 +148,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
         return isPitchClass(rootPitchSetting) ? new Note(rootPitchSetting, defaultOctave) : new Note(randomPitchClass(), defaultOctave);
     }
 
-    function setNewNotes() {
+    async function setNewNotes() {
 
         const newRoot = pickRoot();
 
@@ -176,24 +191,32 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
             newTargetNotes.push(new Note(nextPitchClass, octave));
         }
 
-        setNotes([newRoot, ...newTargetNotes]);
+
+        const newNotes = [newRoot, ...newTargetNotes];
+        setNotes(newNotes);
         setRoot(newRoot);
-        setCurrentQuestionIndex(startQuestionIndex);
 
 
-        playQuestion([newRoot, ...newTargetNotes]);
+
+
+        await playMelody(newNotes);
+        setTimeout(() => {
+            playMelody(newNotes, 0, startQuestionIndex).then(() =>
+                setSelectedNoteIndex(startQuestionIndex)
+            );
+        }, 300);
 
     }
 
     const replayQuestion = () => {
         if (notes.length === 0) { setNewNotes(); return; }
-        playQuestion(notes);
+        playMelody(notes);
     }
 
-    const playQuestion = async (notes: Note[]) => {
+    const playMelody = async (notes: Note[], start = 0, end = notes.length) => {
 
 
-        for (let i = 0; i < notes.length; i++) {
+        for (let i = start; i < end; i++) {
 
 
             setTargetNotesChannels((prev) => [
@@ -290,6 +313,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
         isTalking: audioPlayer.isPlaying,
         targetNotesChannelOutput,
         currentQuestionIndex,
+        selectedNoteIndex,
         correctNotesCount,
         root,
         skipRoot

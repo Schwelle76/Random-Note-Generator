@@ -33,7 +33,6 @@ const NoteInputButtonGrid: React.FC<NoteInputButtonGridProps> = ({ root, noteInp
     }, [resetTrigger, settings]);
 
     const handleButtonClick = (interval: Interval) => {
-        console.log("clicked: " + getPitchClass(root, interval));
         setClickedButtons(prev => new Set(prev).add(interval));
         noteInput.setUiInput(getPitchClass(root, interval));
     };

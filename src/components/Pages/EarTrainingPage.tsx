@@ -13,6 +13,7 @@ import { useEarTrainingSettingsContext } from '../../contexts/EarTrainingSetting
 import volumeIcon from '../../assets/volume-mid.svg';
 import LoadingIcon from '../LoadingIcon';
 import NoteInputPanel from '../NoteInputPanel';
+import useAudioPlayer from '../../hooks/useAudioPlayer';
 
 
 
@@ -21,14 +22,15 @@ const EarTrainingPage: React.FC = () => {
     const earTrainingSettings = useEarTrainingSettingsContext()
     const noteInput = useNoteInput()
 
-    const earTrainingGame = useEarTrainingGame(noteInput.note, earTrainingSettings.scale, earTrainingSettings.root, earTrainingSettings.direction, 1);
-
+    const earTrainingGame = useEarTrainingGame(noteInput.note, earTrainingSettings.scale, earTrainingSettings.root, earTrainingSettings.direction, 5);
 
     useEffect(() => {
         if (noteInput.inputDevice === 'ui')
             earTrainingGame.skipRoot(true);
         else earTrainingGame.skipRoot(false);
     }, [noteInput.inputDevice])
+
+
 
 
     const [roundCount, setRoundCount] = useState(0);
@@ -103,7 +105,7 @@ const EarTrainingPage: React.FC = () => {
                     <NoteDisplay
                         notes={[...earTrainingGame.targetNotesChannelOutput]}
                         root={earTrainingGame.root.pitchClass}
-                        activeNoteIndex={earTrainingGame.currentQuestionIndex}
+                        activeNoteIndex={earTrainingGame.selectedNoteIndex}
                     />}
             </div>
 
