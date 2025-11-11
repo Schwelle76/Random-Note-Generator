@@ -1,12 +1,12 @@
 import React from 'react';
 import './SettingsPanel.css';
-import { SCALES} from '../constants/SCALES';
+import { SCALES } from '../constants/SCALES';
 import { useEarTrainingSettingsContext } from '../contexts/EarTrainingSettingsContext';
 import EarTrainingSettings from '../models/EarTrainingSettings';
 import { Direction, DIRECTIONS } from '../models/Direction';
 import { INTERVALS } from '../models/Note';
 
-const SettingsPanel = ({}) => {
+const SettingsPanel = ({ }) => {
 
   const settings = useEarTrainingSettingsContext();
 
@@ -39,7 +39,7 @@ const SettingsPanel = ({}) => {
           {ScalePresets.map((preset, index) => (
             <option key={index} value={preset.name}>{preset.name}</option>
           ))}
-          <option value= {settings.customScale.current.name}>Custom Scale</option>
+          <option value={settings.customScale.current.name}>Custom Scale</option>
         </select>
 
 
@@ -65,9 +65,24 @@ const SettingsPanel = ({}) => {
           className="dropdown"
         >
           {DIRECTIONS.map(direction => (
-            <option key = {direction} value ={direction}>{direction.charAt(0).toUpperCase() + direction.slice(1)}</option>
+            <option key={direction} value={direction}>{direction.charAt(0).toUpperCase() + direction.slice(1)}</option>
           ))}
         </select>
+      </div>
+
+      <div className="setting-section">
+        <h3>Melody Length</h3>
+        <div className="melody-length-container">
+          <span>{settings.melodyLength}</span>
+          <input
+            type="range"
+            min="1"
+            max="5"
+            value={settings.melodyLength}
+            onChange={(e) => settings.setMelodyLength(parseInt(e.target.value))}
+          >
+          </input>
+        </div>
       </div>
     </div>
   );

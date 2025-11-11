@@ -9,6 +9,7 @@ export default function useEarTrainingSettings() {
   const [direction, setDirection] = useState<Direction>('ascending');
   const [scale, setScale] = useState(SCALES[0]);
   const [scalePreset, setScalePreset] = useState(SCALES[0].name);
+  const [melodyLength, setMelodyLength] = useState(1);
   const customScale = useRef(new Scale("Custom Scale", [0]));
 
 
@@ -52,6 +53,8 @@ export default function useEarTrainingSettings() {
     setCurrentRoot: setRoot,
     setScalePreset,
     setCurrentDirection: setDirection,
-    customScale
+    customScale,
+    melodyLength,
+    setMelodyLength
   };
 }

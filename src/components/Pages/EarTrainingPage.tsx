@@ -21,17 +21,13 @@ const EarTrainingPage: React.FC = () => {
 
     const earTrainingSettings = useEarTrainingSettingsContext()
     const noteInput = useNoteInput()
+    const [melodyLength, setMelodyLength] = useState(earTrainingSettings.melodyLength);
+    const [scale, setScale] = useState(earTrainingSettings.scale);
+    const [root, setRoot] = useState(earTrainingSettings.root);
+    const [direction, setDirection] = useState(earTrainingSettings.direction);
 
-    const earTrainingGame = useEarTrainingGame(noteInput.note, earTrainingSettings.scale, earTrainingSettings.root, earTrainingSettings.direction, 5);
-
-    useEffect(() => {
-        if (noteInput.inputDevice === 'ui')
-            earTrainingGame.skipRoot(true);
-        else earTrainingGame.skipRoot(false);
-    }, [noteInput.inputDevice])
-
-
-
+    const earTrainingGame = useEarTrainingGame(noteInput.note, scale, root, direction, melodyLength);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
     const [roundCount, setRoundCount] = useState(0);
     const previousScore = useRef(0);
@@ -49,7 +45,22 @@ const EarTrainingPage: React.FC = () => {
     }, [score]);
 
 
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    useEffect(() => {
+        if (!isSidebarOpen) {
+            setMelodyLength(earTrainingSettings.melodyLength);
+            setScale(earTrainingSettings.scale);
+            setRoot(earTrainingSettings.root);
+            setDirection(earTrainingSettings.direction);
+        }
+
+    }, [isSidebarOpen]);
+    
+    useEffect(() => {
+        if (noteInput.inputDevice === 'ui')
+            earTrainingGame.skipRoot(true);
+        else earTrainingGame.skipRoot(false);
+    }, [noteInput.inputDevice])
+
 
     useGlobalPointer((ev) => {
         if (earTrainingGame.active && !earTrainingGame.isTalking && !isSidebarOpen)
@@ -60,7 +71,6 @@ const EarTrainingPage: React.FC = () => {
         if (noteInput.ready)
             earTrainingGame.start();
     }, [noteInput.ready])
-
 
 
     return (

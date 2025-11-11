@@ -23,7 +23,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
 
     const audioPlayer = useAudioPlayer();
 
-    const [targetNotesChannelOutput, setTargetNotesChannels] = useState<StyledMessage[]>(Array.from({ length: melodyLength }, () => ({ message: '', style: '' })));
+    const [targetNotesChannelOutput, setTargetNotesChannels] = useState<StyledMessage[]>(Array.from({ length: melodyLength + 1 }, () => ({ message: '', style: '' })));
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
     const [selectedNoteIndex, setSelectedNoteIndex] = useState(0);
     const [startQuestionIndex, setStartQuestionIndex] = useState(0);
@@ -40,7 +40,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
         setActive(true);
 
         setScore(0);
-
+        setCurrentQuestionIndex(1);
 
         if (ready === true)
             setNewNotes();
@@ -122,10 +122,12 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
                 audioPlayer.play(notes[selectedNoteIndex].toString());
             }
             else {
-                setSelectedNoteIndex(0);
                 setCurrentQuestionIndex(1);
-                playReward().then(() => {
-                    setNewNotes();
+                audioPlayer.play(notes[selectedNoteIndex].toString()).then(() => {
+                    playReward().then(() => {
+                        setSelectedNoteIndex(0);
+                        setNewNotes();
+                    });
                 });
             }
         } else {
@@ -197,20 +199,21 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
         setRoot(newRoot);
 
 
+        await replayQuestion(newNotes);
 
-
-        await playMelody(newNotes);
-        setTimeout(() => {
-            playMelody(newNotes, 0, startQuestionIndex).then(() =>
-                setSelectedNoteIndex(startQuestionIndex)
-            );
-        }, 300);
 
     }
 
-    const replayQuestion = () => {
-        if (notes.length === 0) { setNewNotes(); return; }
-        playMelody(notes);
+    const replayQuestion = async (melody: Note[] = notes) => {
+
+        if (melody.length === 0) { setNewNotes(); return; }
+        await playMelody(melody);
+        await setTimeout(() => {
+            playMelody(melody, 0, startQuestionIndex).then(() => {
+                setSelectedNoteIndex(startQuestionIndex);
+            }
+            );
+        }, 300);
     }
 
     const playMelody = async (notes: Note[], start = 0, end = notes.length) => {
