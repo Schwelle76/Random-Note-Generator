@@ -1,19 +1,19 @@
 import React, {useEffect, useRef, useState } from 'react';
 import style from './NoteDisplay.module.css';
-import { StyledMessage } from '../models/StyledMessage';
+import { StyledNote } from '../models/StyledMessage';
 import { getInterval, isPitchClass, Note, PitchClass } from '../models/Note';
 import useWindowSize from '../hooks/useWindowSize';
 
 interface NoteDisplayProps {
-  notes: StyledMessage[];
-  root: PitchClass;
+  styledNotes: StyledNote[];
+  root: Note;
   activeNoteIndex: number;
 }
 
-const NoteDisplay: React.FC<NoteDisplayProps> = ({ notes, root, activeNoteIndex }) => {
+const NoteDisplay: React.FC<NoteDisplayProps> = ({ styledNotes, root, activeNoteIndex }) => {
 
   const noteRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const activeNote = notes[activeNoteIndex];
+  const activeNote = styledNotes[activeNoteIndex];
 
   const activeElement = noteRefs.current[activeNoteIndex];
   const indicatorScale = 1.2;
@@ -39,9 +39,9 @@ const NoteDisplay: React.FC<NoteDisplayProps> = ({ notes, root, activeNoteIndex 
   useWindowSize(updateIndicatorPosition);
 
   useEffect(() => {
-    noteRefs.current = noteRefs.current.slice(0, notes.length);
+    noteRefs.current = noteRefs.current.slice(0, styledNotes.length);
     updateIndicatorPosition();
-  }, [notes]);
+  }, [styledNotes]);
 
 
   return (
@@ -55,27 +55,27 @@ const NoteDisplay: React.FC<NoteDisplayProps> = ({ notes, root, activeNoteIndex 
       }} />
 
 
-      {notes.map((note, index) => {
-        const message = note.message;
-        let content: string;
+      {styledNotes.map((styledNote, index) => {
+        const note = styledNote.note;
+        let interval: string;
 
-        if (isPitchClass(message)) {
-          content = getInterval(message, root);
+        if (note != null) {
+          interval = getInterval(note, root);
         } else {
-          content = message;
+          interval = '?';
         }
 
         return (
           <div
             key={index}
             ref={(el) => { noteRefs.current[index] = el; }}
-            className={`${style.noteDisplay} ${style[note.style]}`}
+            className={`${style.noteDisplay} ${style[styledNote.style]}`}
           >
             <div className={style.currentNote}>
-              <span>{note.message}</span>
+              <span>{note ? note.pitchClass : '?'}</span>
             </div>
             <div className={style.currentInterval}>
-              <span>{content}</span>
+              <span>{interval}</span>
             </div>
           </div>
         );

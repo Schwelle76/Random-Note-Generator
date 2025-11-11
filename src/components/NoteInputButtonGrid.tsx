@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useEarTrainingSettingsContext } from '../contexts/EarTrainingSettingsContext';
 import { Scale } from '../models/Scale';
-import { getPitchClass, Interval, INTERVALS, PitchClass } from '../models/Note';
+import { getPitchClass, Interval, ROOT_OCTAVE_INTERVALS, PitchClass, INTERVALS } from '../models/Note';
 import useEarTrainingGame from '../hooks/useEarTrainingGame';
 import useNoteInput from '../hooks/useNoteInput';
 import styles from './NoteInputButtonGrid.module.css';

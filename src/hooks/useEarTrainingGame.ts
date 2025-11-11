@@ -1,13 +1,8 @@
-import { useState, useEffect, useRef, use } from 'react';
-
-import usePitchDetection from './usePitchDetection';
-import EarTrainingSettings from '../models/EarTrainingSettings';
-import { SCALES } from '../constants/SCALES';
+import { useState, useEffect, useRef} from 'react';
 import { Scale } from '../models/Scale';
-import SoundfontService from '../services/SoundFontService';
-import { getInterval, getPitchClass, isPitchClass, Note, parsePitchClass, PITCH_CLASSES, PitchClass, randomPitchClass } from '../models/Note';
+import {  getPitchClass, isPitchClass, Note, PITCH_CLASSES, PitchClass, randomPitchClass } from '../models/Note';
 import { Direction } from '../models/Direction';
-import { StyledMessage } from '../models/StyledMessage';
+import { StyledNote } from '../models/StyledMessage';
 import useAudioPlayer from './useAudioPlayer';
 
 export default function useEarTrainingGame(detectedNote: Note | PitchClass | undefined, scale: Scale, rootPitchSetting: string, direction: Direction, melodyLength: number) {
@@ -23,7 +18,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
 
     const audioPlayer = useAudioPlayer();
 
-    const [targetNotesChannelOutput, setTargetNotesChannels] = useState<StyledMessage[]>(Array.from({ length: melodyLength + 1 }, () => ({ message: '', style: '' })));
+    const [targetNotesChannelOutput, setTargetNotesChannels] = useState<StyledNote[]>(Array.from({ length: melodyLength + 1 }, () => ({ note: null, style: '' })));
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
     const [selectedNoteIndex, setSelectedNoteIndex] = useState(0);
     const [startQuestionIndex, setStartQuestionIndex] = useState(0);
@@ -98,7 +93,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
             setTargetNotesChannels((prev) =>
                 [
                     ...prev.slice(0, selectedNoteIndex),
-                    { message: notes[selectedNoteIndex].pitchClass, style: "reward" },
+                    { note: notes[selectedNoteIndex], style: "reward" },
                     ...prev.slice(selectedNoteIndex + 1, prev.length)
                 ]
             );
@@ -158,11 +153,11 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
 
         const newTargetNotes: Note[] = [];
 
-        let channelOutput: StyledMessage[] = [];
+        let channelOutput: StyledNote[] = [];
 
-        channelOutput.push({ message: newRoot.pitchClass, style: '' });
+        channelOutput.push({ note: newRoot, style: '' });
         for (let i = 0; i < melodyLength; i++)
-            channelOutput.push({ message: '?', style: '' });
+            channelOutput.push({ note: null, style: '' });
         setTargetNotesChannels(channelOutput);
 
         for (let i = 0; i < melodyLength; i++) {
@@ -224,7 +219,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
 
             setTargetNotesChannels((prev) => [
                 ...prev.slice(0, i),
-                { message: prev[i].message, style: "pulse" },
+                { note: prev[i].note, style: "pulse" },
                 ...prev.slice(i + 1, prev.length)
             ]);
 
@@ -232,7 +227,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
 
             setTargetNotesChannels((prev) => [
                 ...prev.slice(0, i),
-                { message: prev[i].message, style: '' },
+                { note: prev[i].note, style: '' },
                 ...prev.slice(i + 1, prev.length)]
 
             )
@@ -248,7 +243,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
 
                 setTargetNotesChannels((prev) => [
                     ...prev.slice(0, currentQuestionIndex),
-                    { message: prev[currentQuestionIndex].message, style: "punishment" },
+                    { note: prev[currentQuestionIndex].note, style: "punishment" },
                     ...prev.slice(currentQuestionIndex + 1, prev.length)
                 ]
                 );
@@ -266,7 +261,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
                         setTargetNotesChannels((prev) =>
                             [
                                 ...prev.slice(0, currentQuestionIndex),
-                                { message: prev[currentQuestionIndex].message, style: "" },
+                                { note: prev[currentQuestionIndex].note, style: "" },
                                 ...prev.slice(currentQuestionIndex + 1, prev.length)
                             ]
                         );
@@ -286,7 +281,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
 
 
 
-                setTargetNotesChannels(notes.map((note) => ({ message: note.pitchClass, style: "reward" })));
+                setTargetNotesChannels(notes.map((note) => ({ note: note, style: "reward" })));
 
                 const rewardNotes: string[] = [];
                 const RewardInterval = getPitchClass(notes[currentQuestionIndex].pitchClass, "1");
@@ -298,7 +293,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
                 audioPlayer.play(rewardNotes[0], .2, .5);
                 setTimeout(() => {
                     audioPlayer.play(rewardNotes[1].toString(), .4, .4).then(() => {
-                        setTargetNotesChannels(notes.map((note) => ({ message: note.pitchClass, style: "" })));
+                        setTargetNotesChannels(notes.map((note) => ({ note: note, style: "" })));
                         resolve(true)
                     });
 

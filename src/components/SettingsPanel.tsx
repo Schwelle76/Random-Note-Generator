@@ -4,7 +4,7 @@ import { SCALES } from '../constants/SCALES';
 import { useEarTrainingSettingsContext } from '../contexts/EarTrainingSettingsContext';
 import EarTrainingSettings from '../models/EarTrainingSettings';
 import { Direction, DIRECTIONS } from '../models/Direction';
-import { INTERVALS } from '../models/Note';
+import { ROOT_OCTAVE_INTERVALS } from '../models/Note';
 
 const SettingsPanel = ({ }) => {
 
@@ -45,7 +45,7 @@ const SettingsPanel = ({ }) => {
 
 
         <div className="interval-buttons">
-          {INTERVALS.map(interval => (
+          {ROOT_OCTAVE_INTERVALS.map(interval => (
             <button
               key={interval}
               className={`interval-button ${settings.scale.getIntervals().includes(interval) ? 'active' : ''}`}

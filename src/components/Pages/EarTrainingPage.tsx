@@ -4,7 +4,6 @@ import Sidebar from '../Sidebar';
 import SensitivitySlider from '../SensitivitySlider';
 import NoteDisplay from '../NoteDisplay';
 import { useGlobalPointer } from '../../hooks/useGlobalPointer';
-import { getInterval, isPitchClass, Note } from '../../models/Note';
 import useNoteInput from '../../hooks/useNoteInput';
 import useEarTrainingGame from '../../hooks/useEarTrainingGame';
 import NoteInputButtonGrid from '../NoteInputButtonGrid';
@@ -113,8 +112,8 @@ const EarTrainingPage: React.FC = () => {
 
                 {noteInput.inputDevice && earTrainingGame.active && earTrainingGame.ready && noteInput.ready &&
                     <NoteDisplay
-                        notes={[...earTrainingGame.targetNotesChannelOutput]}
-                        root={earTrainingGame.root.pitchClass}
+                        styledNotes={[...earTrainingGame.targetNotesChannelOutput]}
+                        root={earTrainingGame.root}
                         activeNoteIndex={earTrainingGame.selectedNoteIndex}
                     />}
             </div>
