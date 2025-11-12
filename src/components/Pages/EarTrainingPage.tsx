@@ -127,7 +127,7 @@ const EarTrainingPage: React.FC = () => {
 
 
                 {earTrainingGame.ready && noteInput.ready && noteInput.inputDevice === 'ui' &&
-                    <NoteInputButtonGrid resetTrigger={correctNotesCount} noteInput={noteInput} root={earTrainingGame.root.pitchClass} active={!earTrainingGame.isTalking} direction= {direction} />}
+                    <NoteInputButtonGrid resetTrigger={earTrainingGame.selectedNoteIndex} noteInput={noteInput} root={earTrainingGame.root.pitchClass} active={!earTrainingGame.isTalking} direction= {direction} />}
 
             </div>
 
