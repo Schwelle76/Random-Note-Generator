@@ -1,4 +1,4 @@
-import { PITCH_CLASSES, ROOT_OCTAVE_INTERVALS, Interval } from "./Note";
+import { PITCH_CLASSES, BASE_INTERVALS, Interval } from "./Note";
 
 export class Scale {
 
@@ -16,7 +16,7 @@ export class Scale {
     if (typeof input[0] === 'string') {
       this.intervals = input as Interval[];
       this.halftoneSteps = input.map(interval => {
-        const step = ROOT_OCTAVE_INTERVALS.findIndex(i => i === interval);
+        const step = BASE_INTERVALS.findIndex(i => i === interval);
         if (step === -1) {
           throw new Error(`Invalid interval: ${interval}`);
         }
@@ -24,7 +24,7 @@ export class Scale {
       });
     } else {
       this.halftoneSteps = input as number[];
-      this.intervals = this.halftoneSteps.map(step => ROOT_OCTAVE_INTERVALS[step]);
+      this.intervals = this.halftoneSteps.map(step => BASE_INTERVALS[step]);
 
     }
   }

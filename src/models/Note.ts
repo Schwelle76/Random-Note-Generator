@@ -12,16 +12,15 @@ export function parsePitchClass(str: string): PitchClass | undefined {
   else return undefined;
 }
 
-export const ROOT_OCTAVE_INTERVALS = ['1', 'm2', 'M2', 'm3', 'M3', '4', 'b5', '5', 'm6', 'M6', 'm7', 'M7'] as const;
-export const FURTHER_OCTAVE_INTERVALS = ['8', 'm9', 'M9', 'm10', 'M10', '11', 'b13', '13', 'm14', 'M14', 'm15', 'M17'] as const;
-export const INTERVALS = [...ROOT_OCTAVE_INTERVALS, ...FURTHER_OCTAVE_INTERVALS] as const;
+export const BASE_INTERVALS = ['1', 'm2', 'M2', 'm3', 'M3', '4', 'b5', '5', 'm6', 'M6', 'm7', 'M7'] as const;
+export const EXTENDED_INTERVALS = ['8', 'm9', 'M9', 'm10', 'M10', '11', 'b13', '13', 'm14', 'M14', 'm15', 'M17'] as const;
+export const INTERVALS = [...BASE_INTERVALS, ...EXTENDED_INTERVALS] as const;
 export type Interval = typeof INTERVALS[number];
 
 export function getInterval(note: Note, tonic: Note) {
   const noteIndex = PITCH_CLASSES.indexOf(note.pitchClass);
   const tonicIndex = PITCH_CLASSES.indexOf(tonic.pitchClass);
 
-  //let semitoneDistance = (noteIndex - tonicIndex +12) % 12;
   let semitoneDistance = ((noteIndex + note.octave * 12) - (tonicIndex + tonic.octave * 12));
 
   let mod = 0
@@ -30,8 +29,8 @@ export function getInterval(note: Note, tonic: Note) {
 
   
   if (semitoneDistance < 12)
-    return ROOT_OCTAVE_INTERVALS[intervalIndex];
-  else return FURTHER_OCTAVE_INTERVALS[intervalIndex];
+    return BASE_INTERVALS[intervalIndex];
+  else return EXTENDED_INTERVALS[intervalIndex];
 
 
 }
