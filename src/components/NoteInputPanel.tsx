@@ -10,11 +10,14 @@ interface NoteInputPanelProps {
 }
 
 const NoteInputPanel: React.FC<NoteInputPanelProps> = ({ noteInput }) => {
+
+    const pitchClass = noteInput.note instanceof Note ? noteInput.note.pitchClass : noteInput.note;
+
     return (
         <div className={styles.noteInputPanel}>
 
             <div className={styles.inputPitchContainer}>
-                <span className={styles.inputPitch}>{noteInput.note?.toString()}</span>
+                <span className={styles.inputPitch}>{pitchClass ? pitchClass : " "}</span>
             </div>
             <SensitivitySlider
                 value={noteInput.sensitivity}

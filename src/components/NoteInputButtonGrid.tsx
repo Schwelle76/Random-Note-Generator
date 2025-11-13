@@ -48,7 +48,6 @@ const NoteInputButtonGrid: React.FC<NoteInputButtonGridProps> = ({ root, noteInp
         > {/* <span>{getPitchClass(root, interval)}</span> */}<span>{label}</span></button>
     }
 
-    console.log(intervals + ' - ' + direction);
 
     return (
 

@@ -22,8 +22,8 @@ const NoteDisplay: React.FC<NoteDisplayProps> = ({ styledNotes, root, activeNote
   const [indicatorY, setIndicatorY] = useState(0);
   const [indicatorOpacity, setIndicatorOpacity] = useState(0);
 
-  const updateIndicatorPosition = () =>{
 
+  const updateIndicatorPosition = () =>{
 
     setIndicatorOpacity(activeElement ? 1 : 0);
 
@@ -36,11 +36,17 @@ const NoteDisplay: React.FC<NoteDisplayProps> = ({ styledNotes, root, activeNote
     }
   };
 
-  useWindowSize(updateIndicatorPosition);
+  const onWindowResize = () => {
+      setTimeout(() => {
+          updateIndicatorPosition();
+      }, 100);
+  }
+
+  useWindowSize(onWindowResize);
 
   useEffect(() => {
     noteRefs.current = noteRefs.current.slice(0, styledNotes.length);
-    updateIndicatorPosition();
+    updateIndicatorPosition;
   }, [styledNotes]);
 
 

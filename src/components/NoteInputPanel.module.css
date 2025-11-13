@@ -1,6 +1,5 @@
 
 .note-input-panel{
-
 }
 
 .input-pitch-container{
@@ -9,8 +8,8 @@
     align-items: center;
     text-align: center;
     
-    height: 7rem;
-    width: 7rem;
+    height: 6em;
+    width: 6em;
     margin: auto;
     margin-bottom: 2vh;
     
@@ -20,5 +19,6 @@
 }
 
 .input-pitch{
-    font-size: 3rem;
+    line-height: 4em;
+    font-size: 4em;
 }

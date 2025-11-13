@@ -12,7 +12,7 @@ import { useEarTrainingSettingsContext } from '../../contexts/EarTrainingSetting
 import volumeIcon from '../../assets/volume-mid.svg';
 import LoadingIcon from '../LoadingIcon';
 import NoteInputPanel from '../NoteInputPanel';
-import useAudioPlayer from '../../hooks/useAudioPlayer';
+import animation from '../../animations.module.css';
 
 
 
@@ -28,11 +28,14 @@ const EarTrainingPage: React.FC = () => {
     const earTrainingGame = useEarTrainingGame(noteInput.note, scale, root, direction, melodyLength);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
+    const [microphoneCalibrated, setMicrophoneCalibrated] = useState(false);
+
     const [roundCount, setRoundCount] = useState(0);
     const previousScore = useRef(0);
 
     const score = earTrainingGame.score;
     const correctNotesCount = earTrainingGame.correctNotesCount;
+
 
     useEffect(() => {
 
@@ -53,11 +56,15 @@ const EarTrainingPage: React.FC = () => {
         }
 
     }, [isSidebarOpen]);
-    
+
     useEffect(() => {
         if (noteInput.inputDevice === 'ui')
             earTrainingGame.skipRoot(true);
         else earTrainingGame.skipRoot(false);
+
+        if (noteInput.inputDevice === 'ui' || noteInput.inputDevice === 'keyboard') {
+            setMicrophoneCalibrated(true);
+        }
     }, [noteInput.inputDevice])
 
 
@@ -67,9 +74,9 @@ const EarTrainingPage: React.FC = () => {
     });
 
     useEffect(() => {
-        if (noteInput.ready)
+        if (noteInput.ready && microphoneCalibrated)
             earTrainingGame.start();
-    }, [noteInput.ready])
+    }, [noteInput.ready, microphoneCalibrated])
 
 
     return (
@@ -91,7 +98,19 @@ const EarTrainingPage: React.FC = () => {
 
 
 
-            <div className={styles.centerElement}>
+            <div className={microphoneCalibrated ? styles.centerElement : styles.bottom}>
+
+
+                {noteInput.inputDevice && earTrainingGame.active && earTrainingGame.ready && noteInput.ready && microphoneCalibrated &&
+                    <NoteDisplay
+                        styledNotes={[...earTrainingGame.targetNotesChannelOutput]}
+                        root={earTrainingGame.root}
+                        activeNoteIndex={earTrainingGame.selectedNoteIndex}
+                    />}
+            </div>
+
+
+            <div className={microphoneCalibrated ? styles.bottom : styles.centerElement}>
 
 
                 {!noteInput.inputDevice &&
@@ -105,35 +124,42 @@ const EarTrainingPage: React.FC = () => {
                 }
 
 
-                
-                {noteInput.inputDevice && earTrainingGame.active && !earTrainingGame.ready && noteInput.ready &&
+                {/*            */}
+
+                {noteInput.inputDevice && earTrainingGame.active && !earTrainingGame.ready && noteInput.ready && microphoneCalibrated &&
                     <LoadingIcon />
                 }
 
-                {noteInput.inputDevice && earTrainingGame.active && earTrainingGame.ready && noteInput.ready &&
-                    <NoteDisplay
-                        styledNotes={[...earTrainingGame.targetNotesChannelOutput]}
-                        root={earTrainingGame.root}
-                        activeNoteIndex={earTrainingGame.selectedNoteIndex}
-                    />}
-            </div>
+                {noteInput.inputDevice != 'ui' && noteInput.ready &&
+                    <div className={!microphoneCalibrated ? styles.absoluteCenter : styles.returnToOrigin}>
+                        <div className={!microphoneCalibrated ? animation.growUp : animation.shrinkAway}>
+                            <h2 >Adjust sensitivity so that ONLY the notes you play are shown!</h2>
+                            <hr />
+                            <br />
+                        </div>
 
+                        <div style={!microphoneCalibrated ? {fontSize : "1.5rem"} : {}}>
+                            <NoteInputPanel noteInput={noteInput} />
+                        </div>
 
-            <div className={styles.bottom}>
-
-
-                {noteInput.ready && noteInput.inputDevice != 'ui' 
-                && <NoteInputPanel noteInput={noteInput} />}
-
+                        <div className={!microphoneCalibrated ? animation.growUp : animation.shrinkAway}>
+                            <br />
+                            <hr />
+                            <p className={!microphoneCalibrated ? animation.growUp : animation.shrinkAway}>If unplayed notes flash on the screen, lower the sensitivity.</p>
+                            <button className={!microphoneCalibrated ? animation.growUp : animation.shrinkAway} onClick={() => setMicrophoneCalibrated((prev) => !prev)}>Done</button>
+                        </div>
+                    </div>
+                }
 
                 {earTrainingGame.ready && noteInput.ready && noteInput.inputDevice === 'ui' &&
-                    <NoteInputButtonGrid resetTrigger={earTrainingGame.selectedNoteIndex} noteInput={noteInput} root={earTrainingGame.root.pitchClass} active={!earTrainingGame.isTalking} direction= {direction} />}
+                    <NoteInputButtonGrid resetTrigger={earTrainingGame.selectedNoteIndex} noteInput={noteInput} root={earTrainingGame.root.pitchClass} active={!earTrainingGame.isTalking} direction={direction} />}
 
             </div>
 
 
-            <div className={styles.bottomBar}>
-                <img className={`${styles.soundIcon} ${earTrainingGame.isTalking ? styles.show : styles.hide}`} src={volumeIcon} alt={"Turn on volume"} />
+
+            <div className={styles.lowerLeft}>
+                <img className={`${styles.soundIcon} ${earTrainingGame.isTalking ? animation.show : animation.hide}`} src={volumeIcon} alt={"Turn on volume"} />
             </div>
 
             <Sidebar
