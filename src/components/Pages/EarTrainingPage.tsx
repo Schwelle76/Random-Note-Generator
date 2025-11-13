@@ -1,7 +1,6 @@
 import styles from './EarTrainingPage.module.css'
 import React, { use, useEffect, useRef, useState } from 'react';
 import Sidebar from '../Sidebar';
-import SensitivitySlider from '../SensitivitySlider';
 import NoteDisplay from '../NoteDisplay';
 import { useGlobalPointer } from '../../hooks/useGlobalPointer';
 import useNoteInput from '../../hooks/useNoteInput';
@@ -25,6 +24,7 @@ const EarTrainingPage: React.FC = () => {
     const [root, setRoot] = useState(earTrainingSettings.root);
     const [direction, setDirection] = useState(earTrainingSettings.direction);
 
+
     const earTrainingGame = useEarTrainingGame(noteInput.note, scale, root, direction, melodyLength);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
@@ -44,6 +44,7 @@ const EarTrainingPage: React.FC = () => {
             setRoundCount(roundCount + 1);
         }
         previousScore.current = earTrainingGame.score;
+
     }, [score]);
 
 
@@ -55,7 +56,7 @@ const EarTrainingPage: React.FC = () => {
             setDirection(earTrainingSettings.direction);
         }
 
-    }, [isSidebarOpen]);
+    }, [isSidebarOpen, earTrainingSettings]);
 
     useEffect(() => {
         if (noteInput.inputDevice === 'ui')
