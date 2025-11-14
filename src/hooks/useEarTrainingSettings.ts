@@ -5,12 +5,13 @@ import { Direction } from '../models/Direction';
 import { Interval } from '../models/Note';
 
 export default function useEarTrainingSettings() {
-  const [root, setRoot] = useState('random');
-  const [direction, setDirection] = useState<Direction>('ascending');
+  const [root, setRoot] = useState(localStorage.getItem('root') || 'random');
+  const [direction, setDirection] = useState<Direction>(localStorage.getItem('direction') || 'ascending');
   const [scale, setScale] = useState(SCALES[0]);
   const [scalePreset, setScalePreset] = useState<string | undefined>(undefined);
-  const [melodyLength, setMelodyLength] = useState(1);
+  const [melodyLength, setMelodyLength] = useState(parseInt(localStorage.getItem('melodyLength') || '1') || 1);
   const customScale = useRef(new Scale("Custom Scale", [0]));
+
 
 
   useEffect(() => {
@@ -28,6 +29,18 @@ export default function useEarTrainingSettings() {
 
 
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('root', root);
+  }, [root]);
+
+  useEffect(() => {
+    localStorage.setItem('direction', direction);
+  }, [direction]);
+
+  useEffect(() => {
+    localStorage.setItem('melodyLength', melodyLength.toString());
+  }, [melodyLength]);
 
   useEffect(() => {
 
