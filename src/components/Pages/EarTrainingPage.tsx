@@ -30,22 +30,14 @@ const EarTrainingPage: React.FC = () => {
 
     const [microphoneCalibrated, setMicrophoneCalibrated] = useState(false);
 
-    const [roundCount, setRoundCount] = useState(0);
-    const previousScore = useRef(0);
 
     const score = earTrainingGame.score;
-    const correctNotesCount = earTrainingGame.correctNotesCount;
+    const percentageScoreThreshold = 10;
+    const totalsAnswerCount = earTrainingGame.totalAnswersCount;
+    const correctAnswersCount = earTrainingGame.correctAnswersCount;
+    const correctAnswerPercentage = Math.round((score / Math.min(totalsAnswerCount, earTrainingGame.maxScore)) * 100);
 
-
-    useEffect(() => {
-
-        if (earTrainingGame.score === 0) setRoundCount(0);
-        else if (earTrainingGame.score > previousScore.current) {
-            setRoundCount(roundCount + 1);
-        }
-        previousScore.current = earTrainingGame.score;
-
-    }, [score]);
+    const everyThingReady : boolean = noteInput.inputDevice != undefined && earTrainingGame.active && earTrainingGame.ready && noteInput.ready && microphoneCalibrated;
 
 
     useEffect(() => {
@@ -93,13 +85,13 @@ const EarTrainingPage: React.FC = () => {
 
                 <span
                     className={`${styles.score} ${styles[earTrainingGame.targetNotesChannelOutput[earTrainingGame.currentQuestionIndex].style]}`}
-                >{earTrainingGame.score}</span>
+                >{correctAnswersCount < percentageScoreThreshold ? `${correctAnswersCount}/${percentageScoreThreshold}` : `${correctAnswerPercentage}%`}</span>
 
             </div>
 
 
 
-            <div className={microphoneCalibrated ? styles.centerElement : styles.bottom}>
+            <div className={everyThingReady ? styles.centerElement : styles.bottom}>
 
 
                 {noteInput.inputDevice && earTrainingGame.active && earTrainingGame.ready && noteInput.ready && microphoneCalibrated &&
@@ -111,7 +103,7 @@ const EarTrainingPage: React.FC = () => {
             </div>
 
 
-            <div className={microphoneCalibrated ? styles.bottom : styles.centerElement}>
+            <div className={everyThingReady ? styles.bottom : styles.centerElement}>
 
 
                 {!noteInput.inputDevice &&
@@ -124,8 +116,6 @@ const EarTrainingPage: React.FC = () => {
                     </div>
                 }
 
-
-                {/*            */}
 
                 {noteInput.inputDevice && earTrainingGame.active && !earTrainingGame.ready && noteInput.ready && microphoneCalibrated &&
                     <LoadingIcon />

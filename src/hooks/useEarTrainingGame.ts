@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef, use } from 'react';
 import { Scale } from '../models/Scale';
-import {  getPitchClass, isPitchClass, Note, PITCH_CLASSES, PitchClass, randomPitchClass } from '../models/Note';
+import { getPitchClass, isPitchClass, Note, PITCH_CLASSES, PitchClass, randomPitchClass } from '../models/Note';
 import { Direction } from '../models/Direction';
 import { StyledNote } from '../models/StyledMessage';
 import useAudioPlayer from './useAudioPlayer';
+import RingBuffer from '../models/RingBuffer';
 
 export default function useEarTrainingGame(detectedNote: Note | PitchClass | undefined, scale: Scale, rootPitchSetting: string, direction: Direction, melodyLength: number) {
 
@@ -25,16 +26,28 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
     const [root, setRoot] = useState<Note>(pickRoot());
     const userRootOctaveRef = useRef<number>(defaultOctave);
 
+    const maxScore = 25;
+    const [totalAnswersCount, setTotalAnswersCount] = useState(0);
+    const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
+
     function skipRoot(boolean: boolean) {
 
         const startQuestionIndexValue = boolean ? 1 : 0;
         setStartQuestionIndex(startQuestionIndexValue);
     }
 
+    function updateScore(add: number) {
+        setScore((prev) => Math.max(Math.min(prev + add, maxScore), 0));
+        setTotalAnswersCount((prev) => prev + 1);
+
+        if(add > 0) setCorrectAnswersCount((prev) => prev + add);
+    }
+
     const start = () => {
         setActive(true);
 
         setScore(0);
+        setTotalAnswersCount(0);
         setCurrentQuestionIndex(1);
 
         if (ready === true)
@@ -102,7 +115,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
 
             if (selectedNoteIndex >= currentQuestionIndex) {
                 setCurrentQuestionIndex(prev => prev + 1);
-                setScore((prev) => prev + 1);
+                updateScore(1);
             }
 
             if (selectedNoteIndex < notes.length - 1) {
@@ -127,7 +140,7 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
             }
         } else {
             if (selectedNoteIndex === currentQuestionIndex && selectedNoteIndex > 0 && !detectedNoteIsRoot) {
-                setScore((prev) => Math.max(0, prev - 1));
+                updateScore(-1);
                 playPunishment();
             }
         }
@@ -314,7 +327,10 @@ export default function useEarTrainingGame(detectedNote: Note | PitchClass | und
         selectedNoteIndex,
         correctNotesCount,
         root,
-        skipRoot
+        skipRoot,
+        maxScore,
+        totalAnswersCount,
+        correctAnswersCount
     }
 
 
